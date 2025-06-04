@@ -1,7 +1,5 @@
 #root {
-  max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
 
@@ -10,7 +8,44 @@
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
+}.auth-container {
+  width: 300px;
+  margin: auto;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #f5f5f5;
+  text-align: center;
 }
+.auth-form input {
+  display: block;
+  /* width: 100%; */
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+}
+button {
+  padding: 0.5rem;
+  margin-top: 1rem;
+  width: 45%;
+}
+.oauth-btn {
+  margin-top: 0.5rem;
+  width: 100%;
+  padding: 0.5rem;
+  font-weight: bold;
+}
+.google {
+  background-color: #db4437;
+  color: white;
+}
+.facebook {
+  background-color: #3b5998;
+  color: white;
+}
+.linkedin {
+  background-color: #0077b5;
+  color: white;
+}
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }

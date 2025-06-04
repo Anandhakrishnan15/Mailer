@@ -8,7 +8,7 @@ import {
   IconUser,
 } from "@tabler/icons-react";
 
-import "./NavBar.css"
+// import "./NavBar.css"
 
 const Nav = () => {
     const dockItems = [
