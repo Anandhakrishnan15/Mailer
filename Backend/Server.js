@@ -1,24 +1,26 @@
-const express = require('express')
-const cors = require('cors')
 require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const connectDB = require('./config/db'); // ✅ Only once
+const authRoutes = require('./router/authRoutes');
 
-const app=express();
+const app = express();
+connectDB(); // Connect to MongoDB
 
-app.use(cors());
-app.use(express.json());
-
-
-// Allow CORS from your frontend URL
 app.use(cors({
-    origin: 'http://localhost:5173', // Replace with your frontend URL in production
-    credentials: true, // if you're sending cookies or auth headers
+    origin: 'http://localhost:5173',
+    credentials: true,
 }));
 
-const router =require('./router/main')
-app.use('/',router)
+app.use(helmet());
+app.use(express.json());
 
-const PORT =process.env.PORT || 5000;
-app.listen(PORT,()=>{
-    console.log(`server is running in ${PORT}`);
-    
-})
+const router = require('./router/main'); // or ./routes/authRoutes if that's your actual route
+app.use('/', router);
+app.use('/Auth', authRoutes)
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
