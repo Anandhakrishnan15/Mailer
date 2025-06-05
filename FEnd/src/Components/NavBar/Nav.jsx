@@ -7,37 +7,40 @@ import {
   IconPhone,
   IconUser,
 } from "@tabler/icons-react";
+import { useAuth } from "../../context/AuthContext"; // import context
 
 // import "./NavBar.css"
 
 const Nav = () => {
-    const dockItems = [
-      {
-        title: "Home",
-        icon: <IconHome className="w-full h-full" />,
-        href: "/",
-      },
-      {
-        title: "About Us",
-        icon: <IconInfoCircle className="w-full h-full" />,
-        href: "/about",
-      },
-      {
-        title: "Mail",
-        icon: <IconMail className="w-full h-full" />,
-        href: "mailto:example@example.com",
-      },
-      {
-        title: "Contact",
-        icon: <IconPhone className="w-full h-full" />,
-        href: "/contact",
-      },
-      {
-        title: "Log In / Sign Up",
-        icon: <IconUser className="w-full h-full" />,
-        href: "/auth",
-      },
-    ];
+  const { loggedIn } = useAuth(); // use global login state
+
+  const dockItems = [
+    {
+      title: "Home",
+      icon: <IconHome className="w-full h-full" />,
+      href: "/",
+    },
+    {
+      title: "About Us",
+      icon: <IconInfoCircle className="w-full h-full" />,
+      href: "/about",
+    },
+    {
+      title: "Mail",
+      icon: <IconMail className="w-full h-full" />,
+      href: "mailto:example@example.com",
+    },
+    {
+      title: "Contact",
+      icon: <IconPhone className="w-full h-full" />,
+      href: "/contact",
+    },
+    {
+      title: loggedIn ? "Profile" : "Log In / Sign Up",
+      icon: <IconUser className="w-full h-full" />,
+      href: loggedIn ? "/profile" : "/auth",
+    },
+  ];
 
   return (
     <div>
