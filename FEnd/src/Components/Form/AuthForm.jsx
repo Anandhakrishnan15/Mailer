@@ -3,6 +3,7 @@ import FormFields from "./FormFields";
 import "./form.css";
 import { motion, AnimatePresence } from "framer-motion";
 import { loginUser, registerUser } from "../../Services/Api";
+import { useNavigate } from "react-router-dom";
 
 const AuthForm = () => {
   const [formData, setFormData] = useState({
@@ -11,8 +12,9 @@ const AuthForm = () => {
     password: "",
   });
 
-  const [mode, setMode] = useState("signup");
+  const [mode, setMode] = useState("login");
   const isLogin = mode === "login";
+  const navigate = useNavigate();
 
   const formFields = [
     !isLogin && {
@@ -43,10 +45,6 @@ const AuthForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log(`${isLogin ? "Logging in" : "Signing up"} with:`, formData);
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(`${isLogin ? "Logging in" : "Signing up"} with:`, formData);
@@ -56,18 +54,28 @@ const AuthForm = () => {
         const res = await loginUser(formData);
         console.log("Login successful:", res.data);
         alert("Login successful!");
+        navigate('/')
         localStorage.setItem("token", res.data.token);
       } else {
         const res = await registerUser(formData);
         console.log("Registration successful:", res.data);
         alert("Registration successful! Please login.");
         setMode("login");
+        setFormData([]);
+        navigate("/");
       }
     } catch (error) {
       const msg = error.response?.data?.message || "Something went wrong!";
-      console.error("Auth Error:", msg);
+      if (msg == "User already exists" ) {
+        setMode("login");
+      }
+      if (msg == "No user Found"){
+        setMode("signup");
+      }
+        console.error("Auth Error:", msg);
       alert(msg);
     }
+    
   };
 
   const variantsLeft = {
@@ -99,13 +107,15 @@ const AuthForm = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-r from-[#341c57] via-[#3c8993] to-[#355c9e] p-4">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-r from-[#2c5499] via-[#1b3460] to-[#2258b6] p-4">
       <div
         className={`relative overflow-hidden flex ${
-          isLogin ? "flex-col md:flex-row" : "flex-col md:flex-row-reverse"
-        } max-w-4xl w-full bg-white/10 backdrop-blur-md rounded-2xl shadow-xl`}
+          isLogin
+            ? "flex-col-reverse md:flex-row"
+            : "flex-col-reverse md:flex-row-reverse"
+        } max-w-4xl w-full bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl`}
       >
-        {/* Image/Text Side */}
+        {/* Illustration Side */}
         <AnimatePresence mode="wait">
           <motion.div
             key={`image-${mode}`}
@@ -113,17 +123,18 @@ const AuthForm = () => {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="relative md:static w-full md:w-1/2 p-6 sm:p-8 flex flex-col items-center justify-center text-center text-white z-10"
+            className="relative md:static w-full md:w-1/2 p-8 flex flex-col items-center justify-center text-center text-white bg-[#518bff47]"
           >
             <img
-              src="https://media.istockphoto.com/id/1281150061/vector/register-account-submit-access-login-password-username-internet-online-website-concept.jpg?s=612x612&w=0&k=20&c=9HWSuA9IaU4o-CK6fALBS5eaO1ubnsM08EOYwgbwGBo="
+              src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
               alt="illustration"
-              className="rounded-xl mb-4 sm:mb-6 w-full max-w-[300px] sm:max-w-[400px]"
+              className="rounded-xl mb-4 sm:mb-6 w-full max-w-[280px]"
+             
             />
-            <h2 className="text-xl sm:text-2xl font-bold">
+            <h2 className="text-3xl font-bold mb-2">
               {isLogin ? "Welcome Back!" : "Join Us Today!"}
             </h2>
-            <p className="text-sm sm:text-base opacity-80 mt-2">
+            <p className="text-base opacity-80">
               {isLogin
                 ? "Please login to access your dashboard."
                 : "Create an account to get started."}
@@ -139,31 +150,37 @@ const AuthForm = () => {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="relative md:static w-full md:w-1/2 p-6 sm:p-8 z-20"
+            className="relative md:static w-full md:w-1/2 p-8 z-20 flex flex-col justify-center bg-[#518bff47]"
           >
-            <form onSubmit={handleSubmit} className="space-y-4 text-white">
-              <h2 className="text-xl sm:text-2xl font-semibold mb-4">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-5 text-white flex flex-col justify-center"
+            >
+              <h2 className="text-3xl font-semibold mb-4">
                 {isLogin ? "Login" : "Sign Up"}
               </h2>
+
               <FormFields
                 formData={formData}
                 handleChange={handleChange}
                 formFields={formFields}
               />
+
               <button
                 type="submit"
-                className="w-full bg-white/30 hover:bg-white/40 text-white font-bold py-2 px-4 rounded-xl transition"
+                className="w-full bg-gradient-to-r from-[#6a7efc] to-[#5f9fe2] hover:brightness-110 text-white font-semibold py-2 rounded-xl transition"
               >
                 {isLogin ? "Login" : "Sign Up"}
               </button>
-              <p className="mt-0">
+
+              <p className="text-center text-sm">
                 {isLogin
                   ? "Don't have an account?"
-                  : "Already have an account?"}{" "}
+                  : "Already have an account?"}
                 <button
                   type="button"
-                  onClick={() => setMode(mode === "login" ? "signup" : "login")}
-                  className="underline ml-1"
+                  onClick={() => setMode(isLogin ? "signup" : "login")}
+                  className="underline ml-1 font-medium"
                 >
                   {isLogin ? "Sign Up" : "Login"}
                 </button>
@@ -171,25 +188,25 @@ const AuthForm = () => {
 
               <div className="mt-6 text-sm text-center opacity-80">
                 Or {isLogin ? "login" : "sign up"} with:
-                <div className="flex flex-wrap justify-center gap-3 mt-2">
+                <div className="flex flex-wrap justify-center gap-3 mt-3">
                   <button
                     type="button"
                     onClick={() => alert("Google Login")}
-                    className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md text-sm"
+                    className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md text-sm font-medium"
                   >
                     Google
                   </button>
                   <button
                     type="button"
                     onClick={() => alert("Facebook Login")}
-                    className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md text-sm"
+                    className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium"
                   >
                     Facebook
                   </button>
                   <button
                     type="button"
                     onClick={() => alert("LinkedIn Login")}
-                    className="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-md text-sm"
+                    className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md text-sm font-medium"
                   >
                     LinkedIn
                   </button>
