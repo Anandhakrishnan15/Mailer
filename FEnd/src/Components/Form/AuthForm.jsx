@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import FormFields from "./FormFields";
 import "./form.css";
 import { motion, AnimatePresence } from "framer-motion";
-import { loginUser, registerUser } from "../../Services/Api";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const AuthForm = () => {
+  const { handleAuthSubmit } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,7 +14,7 @@ const AuthForm = () => {
 
   const [mode, setMode] = useState("login");
   const isLogin = mode === "login";
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const formFields = [
     !isLogin && {
@@ -45,37 +45,11 @@ const AuthForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(`${isLogin ? "Logging in" : "Signing up"} with:`, formData);
-
-    try {
-      if (isLogin) {
-        const res = await loginUser(formData);
-        console.log("Login successful:", res.data);
-        alert("Login successful!");
-        navigate('/')
-        localStorage.setItem("token", res.data.token);
-      } else {
-        const res = await registerUser(formData);
-        console.log("Registration successful:", res.data);
-        alert("Registration successful! Please login.");
-        setMode("login");
-        setFormData([]);
-        navigate("/");
-      }
-    } catch (error) {
-      const msg = error.response?.data?.message || "Something went wrong!";
-      if (msg == "User already exists" ) {
-        setMode("login");
-      }
-      if (msg == "No user Found"){
-        setMode("signup");
-      }
-        console.error("Auth Error:", msg);
-      alert(msg);
-    }
-    
+    handleAuthSubmit(formData, mode, setMode, () =>
+      setFormData({ name: "", email: "", password: "" })
+    );
   };
 
   const variantsLeft = {
