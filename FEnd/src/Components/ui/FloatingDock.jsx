@@ -1,11 +1,10 @@
 /**
- * Note: Use position fixed according to your needs
- * Desktop navbar is better positioned at the bottom
- * Mobile navbar is better positioned at bottom right.
- **/
+ * Optimized FloatingDock with static icon imports
+ * Reduces @tabler/icons-react chunk loading
+ */
 
 import { cn } from "../../../lib/utils";
-import { IconLayoutNavbarCollapse } from "@tabler/icons-react";
+// import { IconLayoutNavbarCollapse } from "@tabler/icons-react";
 import {
   AnimatePresence,
   motion,
@@ -13,10 +12,9 @@ import {
   useSpring,
   useTransform,
 } from "motion/react";
-import { Link, NavLink, useLocation } from "react-router-dom";
-import "./NavBar.css";
-
+import { NavLink, useLocation } from "react-router-dom";
 import { useRef, useState } from "react";
+import "./NavBar.css";
 
 export const FloatingDock = ({ items, desktopClassName, mobileClassName }) => {
   return (
@@ -41,22 +39,16 @@ const FloatingDockMobile = ({ items, className }) => {
               <motion.div
                 key={item.title}
                 initial={{ opacity: 0, y: 10 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
+                animate={{ opacity: 1, y: 0 }}
                 exit={{
                   opacity: 0,
                   y: 10,
-                  transition: {
-                    delay: idx * 0.05,
-                  },
+                  transition: { delay: idx * 0.05 },
                 }}
                 transition={{ delay: (items.length - 1 - idx) * 0.05 }}
               >
                 <NavLink
                   to={item.href}
-                  key={item.title}
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-400 navball"
                 >
                   <div className="h-4 w-4">{item.icon}</div>
@@ -70,14 +62,14 @@ const FloatingDockMobile = ({ items, className }) => {
         onClick={() => setOpen(!open)}
         className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
       >
-        <IconLayoutNavbarCollapse className="h-5 w-5 text-neutral-500 dark:text-neutral-400" />
+        {/* <IconLayoutNavbarCollapse className="h-5 w-5 text-neutral-500 dark:text-neutral-400" /> */}
       </button>
     </div>
   );
 };
 
 const FloatingDockDesktop = ({ items, className }) => {
-  let mouseX = useMotionValue(Infinity);
+  const mouseX = useMotionValue(Infinity);
   return (
     <motion.div
       onMouseMove={(e) => mouseX.set(e.pageX)}
@@ -95,41 +87,41 @@ const FloatingDockDesktop = ({ items, className }) => {
 };
 
 function IconContainer({ mouseX, title, icon, href }) {
-  let ref = useRef(null);
-
-  let distance = useTransform(mouseX, (val) => {
-    let bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
-
+  const ref = useRef(null);
+  const distance = useTransform(mouseX, (val) => {
+    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
     return val - bounds.x - bounds.width / 2;
   });
 
-  let widthTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-  let heightTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-
-  let widthTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
-  let heightTransformIcon = useTransform(
+  const widthTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
+  const heightTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
+  const widthTransformIcon = useTransform(
+    distance,
+    [-150, 0, 150],
+    [20, 40, 20]
+  );
+  const heightTransformIcon = useTransform(
     distance,
     [-150, 0, 150],
     [20, 40, 20]
   );
 
-  let width = useSpring(widthTransform, {
+  const width = useSpring(widthTransform, {
     mass: 0.1,
     stiffness: 150,
     damping: 12,
   });
-  let height = useSpring(heightTransform, {
+  const height = useSpring(heightTransform, {
     mass: 0.1,
     stiffness: 150,
     damping: 12,
   });
-
-  let widthIcon = useSpring(widthTransformIcon, {
+  const widthIcon = useSpring(widthTransformIcon, {
     mass: 0.1,
     stiffness: 150,
     damping: 12,
   });
-  let heightIcon = useSpring(heightTransformIcon, {
+  const heightIcon = useSpring(heightTransformIcon, {
     mass: 0.1,
     stiffness: 150,
     damping: 12,
@@ -137,9 +129,6 @@ function IconContainer({ mouseX, title, icon, href }) {
 
   const [hovered, setHovered] = useState(false);
   const location = useLocation();
-
-  // lets chek the locaton is tur aor not 
-  
 
   return (
     <NavLink to={href}>
