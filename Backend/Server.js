@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const connectDB = require('./config/db'); // ✅ Only once
 const authRoutes = require('./router/authRoutes');
+const UserInfo = require('./router/UserInfo');
 
 const app = express();
 connectDB(); // Connect to MongoDB
@@ -19,6 +20,7 @@ app.use(express.json());
 const router = require('./router/main'); // or ./routes/authRoutes if that's your actual route
 app.use('/', router);
 app.use('/Auth', authRoutes)
+app.use('/api/users', UserInfo);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
