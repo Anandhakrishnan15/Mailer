@@ -1,10 +1,12 @@
 import "./App.css";
-import Fetchdata from "./Components/fetchdata";
+import Fetchdata from "./Components/Fetchdata";
 import Nav from "./Components/NavBar/Nav";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Auth from "./Pages/Auth";
 import { useAuth } from "./context/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Lazy loaded pages
 const Home = lazy(() => import("./Pages/Home"));
@@ -17,6 +19,7 @@ function App() {
 
   return (
     <>
+      <ToastContainer position="bottom-right" autoClose={2000} />
       <Nav />
       <Fetchdata />
 
