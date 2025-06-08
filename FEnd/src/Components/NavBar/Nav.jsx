@@ -1,43 +1,42 @@
-import React from 'react'
-import { FloatingDock } from '../ui/FloatingDock';
+import React from "react";
+import { FloatingDock } from "../ui/FloatingDock";
 import {
-  IconHome,
-  IconInfoCircle,
-  IconMail,
-  IconPhone,
-  IconUser,
-} from "@tabler/icons-react";
-import { useAuth } from "../../context/AuthContext"; // import context
+  FaHome,
+  FaInfoCircle,
+  FaEnvelope,
+  FaPhone,
+  FaUser,
+} from "react-icons/fa"; // using FontAwesome from react-icons
 
-// import "./NavBar.css"
+import { useAuth } from "../../context/AuthContext"; // global auth context
 
 const Nav = () => {
-  const { loggedIn } = useAuth(); // use global login state
+  const { loggedIn } = useAuth();
 
   const dockItems = [
     {
       title: "Home",
-      icon: <IconHome className="w-full h-full" />,
+      icon: <FaHome className="w-full h-full" />,
       href: "/",
     },
     {
       title: "About Us",
-      icon: <IconInfoCircle className="w-full h-full" />,
+      icon: <FaInfoCircle className="w-full h-full" />,
       href: "/about",
     },
     {
       title: "Mail",
-      icon: <IconMail className="w-full h-full" />,
+      icon: <FaEnvelope className="w-full h-full" />,
       href: "mailto:example@example.com",
     },
     {
       title: "Contact",
-      icon: <IconPhone className="w-full h-full" />,
+      icon: <FaPhone className="w-full h-full" />,
       href: "/contact",
     },
     {
       title: loggedIn ? "Profile" : "Log In / Sign Up",
-      icon: <IconUser className="w-full h-full" />,
+      icon: <FaUser className="w-full h-full" />,
       href: loggedIn ? "/profile" : "/auth",
     },
   ];
@@ -51,6 +50,6 @@ const Nav = () => {
       />
     </div>
   );
-}
+};
 
-export default Nav
+export default Nav;
