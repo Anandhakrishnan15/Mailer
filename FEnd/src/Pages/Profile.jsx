@@ -3,9 +3,10 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
-  const { loggedIn, logout } = useAuth();
+  const { loggedIn, logout, userInfo } = useAuth();
   const navigate = useNavigate();
 
+  console.log("User:", userInfo?.name);
   const handleLogout = () => {
     logout();
     navigate("/auth"); // Optional: Redirect to login page
@@ -13,7 +14,13 @@ const Profile = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold">Welcome to your Profile</h1>
+      {userInfo ? (
+        <h1 className="text-2xl font-bold">
+          Welcome to your Profile, {userInfo.name}!
+        </h1>
+      ) : (
+        <h1 className="text-lg text-gray-500">You are not logged in.</h1>
+      )}
 
       {/* Logout Button */}
       {loggedIn && (
