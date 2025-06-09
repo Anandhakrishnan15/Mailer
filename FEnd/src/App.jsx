@@ -5,8 +5,9 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Auth from "./Pages/Auth";
 import { useAuth } from "./context/AuthContext";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+// import { ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+import { RowProvider } from "./context/RowContext";
 
 // Lazy loaded pages
 const Home = lazy(() => import("./Pages/Home"));
@@ -19,36 +20,38 @@ function App() {
 
   return (
     <>
-      <ToastContainer position="bottom-right" autoClose={2000} />
+      {/* <ToastContainer position="top-center" /> */}
       <Nav />
       <Fetchdata />
 
       <Suspense fallback={<div className="text-center p-4">Loading...</div>}>
-        <Routes>
-          {/* Public Routes */}
-          <Route
-            path="/auth"
-            element={loggedIn ? <Navigate to="/profile" replace /> : <Auth />}
-          />
-          <Route path="/contact" element={<Contact />} />
+        <RowProvider>
+          <Routes>
+            {/* Public Routes */}
+            <Route
+              path="/auth"
+              element={loggedIn ? <Navigate to="/profile" replace /> : <Auth />}
+            />
+            <Route path="/contact" element={<Contact />} />
 
-          {/* Protected Routes */}
-          <Route
-            path="/"
-            element={loggedIn ? <Home /> : <Navigate to="/auth" replace />}
-          />
-          <Route
-            path="/about"
-            element={loggedIn ? <About /> : <Navigate to="/auth" replace />}
-          />
-          <Route
-            path="/profile"
-            element={loggedIn ? <Profile /> : <Navigate to="/auth" replace />}
-          />
+            {/* Protected Routes */}
+            <Route
+              path="/"
+              element={loggedIn ? <Home /> : <Navigate to="/auth" replace />}
+            />
+            <Route
+              path="/about"
+              element={loggedIn ? <About /> : <Navigate to="/auth" replace />}
+            />
+            <Route
+              path="/profile"
+              element={loggedIn ? <Profile /> : <Navigate to="/auth" replace />}
+            />
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </RowProvider>
       </Suspense>
     </>
   );
