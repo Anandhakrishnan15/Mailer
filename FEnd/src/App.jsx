@@ -41,7 +41,7 @@ function App() {
             />
             <Route
               path="/about"
-              element={loggedIn ? <About /> : <Navigate to="/auth" replace />}
+              element={ <About /> }
             />
             <Route
               path="/profile"
