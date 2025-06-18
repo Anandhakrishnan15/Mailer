@@ -1,10 +1,11 @@
 // File: RowContext.jsx
 import React, { createContext, useContext, useState } from "react";
 import { toast } from "react-toastify";
+import { checkRowId, submitRow } from "../Services/Api"; // Axios-based checkRowId function
 
 const RowContext = createContext();
 
-const generateRandomId = () => Math.floor(100000 + Math.random() * 900000);
+const generateRandomId = () => Math.random().toString(36).substr(2, 9);
 
 export const RowProvider = ({ children }) => {
   const baseColumns = [
@@ -37,28 +38,39 @@ export const RowProvider = ({ children }) => {
   const [previewRowId, setPreviewRowId] = useState(null);
   const [checkAll, setCheckAll] = useState(false);
 
-  const handleInputChange = (e, rowId, col) => {
-    setRows((prev) =>
-      prev.map((row) =>
-        row.id === rowId
-          ? {
-              ...row,
-              data: {
-                ...row.data,
-                [col]: col === "note" ? e.target.checked : e.target.value,
-              },
-              lastEdited: new Date().toLocaleString(),
-            }
-          : row
-      )
-    );
+  const checkRowIdExists = async (rowId) => {
+    try {
+      const token = localStorage.getItem("token"); // or from context if stored there
+      if (!token) {
+        toast.error("No auth token found");
+        return true;
+      }
+
+      const response = await checkRowId(rowId, token);
+      return response.data.exists;
+    } catch (err) {
+      console.error("Error checking rowId:", err);
+      return true; // assume exists if there's an error
+    }
   };
 
-  const handleAddRow = () => {
+  const handleAddRow = async () => {
+    let uniqueId = generateRandomId();
+    let attempts = 0;
+
+    while (await checkRowIdExists(uniqueId)) {
+      uniqueId = generateRandomId();
+      attempts++;
+      if (attempts > 5) {
+        toast.error("Failed to generate unique ID. Try again.");
+        return;
+      }
+    }
+
     setRows((prev) => [
       ...prev,
       {
-        id: generateRandomId(),
+        id: uniqueId,
         data: {
           name: "",
           subject: "",
@@ -76,24 +88,53 @@ export const RowProvider = ({ children }) => {
     ]);
   };
 
-  const handlePreview = (rowId) => setPreviewRowId(rowId);
-
-  const handleSubmitRow = (rowId) => {
+  const handleInputChange = (e, rowId, col) => {
     setRows((prev) =>
       prev.map((row) =>
         row.id === rowId
           ? {
               ...row,
-              isSubmitted: true,
-              isEditing: false,
+              data: {
+                ...row.data,
+                [col]: col === "note" ? e.target.checked : e.target.value,
+              },
               lastEdited: new Date().toLocaleString(),
-              data: { ...row.data, note: true },
             }
           : row
       )
     );
-    toast.success(`Row ${rowId} submitted!`);
   };
+
+  const handlePreview = (rowId) => setPreviewRowId(rowId);
+
+
+  const handleSubmitRow = async (rowId) => {
+    const updatedRow = rows.find((row) => row.id === rowId);
+    console.log(updatedRow);
+    const userToken = localStorage.getItem("token"); // or from context if stored there
+
+    const newRow = {
+      ...updatedRow,
+      isSubmitted: true,
+      isEditing: false,
+      lastEdited: new Date().toLocaleString(),
+      data: { ...updatedRow.data, note: true },
+    };
+
+    try {
+      // Call your API function (axios)
+      await submitRow(newRow, userToken);
+
+      // Update local state only after successful submission
+      setRows((prev) => prev.map((row) => (row.id === rowId ? newRow : row)));
+
+      toast.success(`Row ${rowId} submitted!`);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to submit row");
+      console.log(error);
+    }
+  };
+
 
   const handleRowGenerate = (rowId) => {
     const aiData = {
